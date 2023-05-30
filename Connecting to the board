@@ -1,0 +1,17 @@
+version: '3'
+services:
+   arduino:
+     build:
+       context: .
+       dockerfile: Dockerfile
+     devices:
+       - /dev/ttyACM0 # Check the correct path to your Arduino port
+     volumes:
+       - ./soil_sensor_code:/app/soil_sensor_code
+
+   soil_sensor_reader:
+     build:
+       context: .
+       dockerfile: Dockerfile.soil_sensor_reader
+     volumes:
+       - ./soil_sensor_code:/app/soil_sensor_code
