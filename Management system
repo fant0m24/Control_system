@@ -1,0 +1,61 @@
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
+
+// BME280 sensor connection
+#define BME_SDA 4
+#define BME_SCL 5
+Adafruit_BME280 bme;
+
+// Ground sensor connection
+#define SOIL_PIN A0
+
+//I will connect watering
+#define PUMP_PIN 6
+
+// Watering parameters
+#define MOISTURE_THRESHOLD 500  // Threshold value of soil moisture for enabling irrigation
+#define PUMP_DURATION 5000      // Trivality of watering in milliseconds
+
+void setup() {
+  Serial.begin(9600);
+
+  // Initialization of the BME280 sensor
+  Wire.begin(BME_SDA, BME_SCL);
+  if (!bme.begin(0x76)) {
+    Serial.println("Failed to know the BME280 sensor, reverse the connection!");
+    while (1);
+  }
+
+  // Setting the irrigation foam as the output
+  pinMode(PUMP_PIN, OUTPUT);
+  digitalWrite(PUMP_PIN, LOW);
+}
+
+void loop() {
+  // Reading sensor values
+  float temperature = bme.readTemperature();
+  float humidity = bme.readHumidity();
+  int soilMoisture = analogRead(SOIL_PIN);
+
+  // Output values to the console
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.print(" °C, Humidity: ");
+  Serial.print(humidity);
+  Serial.print(" %, Soil moisture: ");
+  Serial.print(soilMoisture);
+
+  // Soil moisture check and irrigation management
+  if (soilMoisture > MOISTURE_THRESHOLD) {
+    Serial.println(", The soil is wet");
+    digitalWrite(PUMP_PIN, LOW);  // Turn off watering
+  } else {
+    Serial.println(", Грунт сухий");
+    digitalWrite(PUMP_PIN, HIGH);  // Turn on watering
+    delay(PUMP_DURATION);           // Delay for the duration of watering
+    digitalWrite(PUMP_PIN, LOW);    // Turn off watering
+  }
+
+  delay(1000);  // 1 second delay before next reading
+}
