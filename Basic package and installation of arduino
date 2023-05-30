@@ -1,0 +1,13 @@
+FROM ubuntu:latest
+
+# Встановлення необхідних пакетів для Arduino та зчитування даних з датчика грунту
+RUN apt-get update && apt-get install -y arduino
+
+# Копіювання програмного коду для зчитування даних з датчика грунту
+COPY soil_sensor_code.ino /app/soil_sensor_code.ino
+
+# Збірка програмного коду
+RUN arduino --verify /app/soil_sensor_code.ino
+
+# Команда запуску вашої програми при старті контейнера
+CMD ["arduino", "--upload", "/app/soil_sensor_code.ino"]
