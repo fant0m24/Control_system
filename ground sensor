@@ -1,0 +1,19 @@
+import RPi.GPIO as GPIO
+import time
+
+# Set the GPIO mode and channel
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(sensor_pin, GPIO.IN)
+
+# Function to read the soil moisture level
+def read_soil_moisture():
+    if GPIO.input(sensor_pin):
+        return "Dry"
+    else:
+        return "Wet"
+
+# Main loop
+while True:
+    moisture_level = read_soil_moisture()
+    print("Soil moisture level:", moisture_level)
+    time.sleep(1)  # Delay for 1 second
